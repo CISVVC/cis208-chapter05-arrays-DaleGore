@@ -13,10 +13,15 @@ segment .data
         kernelcall: equ 80h
 
 
+array1		dw	1,2,3,4,5	; array1 = [1,2,3,4,5]
 
 ; uninitialized data is put in the .bss segment
 ;
 segment .bss
+
+size		resw	1
+scale		resw	1
+ary_tmp		resw	1
 
 ;
 ; code is put in the .text segment
@@ -28,6 +33,31 @@ asm_main:
         pusha
 ; *********** Start  Assignment Code *******************
 
+	mov	eax, 0
+	mov	ebx, 0
+	mov	ecx, array1
+start_loop:	
+
+	mov	eax, [ecx + ebx] 
+	imul	eax, 5
+	call	print_int
+	call	print_nl
+	add	ebx, 2
+	cmp	ebx,10
+	jl	start_loop
+
+
+	mov	eax, 5
+	push	eax
+	mov	eax, 10
+;	call	print_int		; test
+;	call	print_nl		; test
+	push	eax
+	push	array1
+	call	scale_int
+
+	add	esp, 12
+
 ; *********** End Assignment Code **********************
 
         popa
@@ -35,4 +65,34 @@ asm_main:
         leave                     
         ret
 
+;scaler function
+scale_int:
+        push    ebp
+        mov     ebp, esp
+
+	mov	ebx, 0
+	mov	eax, 0
+        mov     eax, [esp+4]		; 5
+	mov	[scale], eax
+
+        mov     ax, [esp+8]		; 10
+	mov	[size], eax	
+	
+	mov	eax, [esp+12]		; array1
+	mov	[ary_tmp], eax	
+
+loop_start:
+	
+	mov	eax, [ary_tmp + ebx]	
+	imul	eax, [scale]
+	mov	[ary_tmp], eax
+	
+	add	ebx, 2
+	cmp	ebx, [size]
+        jl      loop_start
+
+
+done:
+        pop     ebp
+        ret
 
