@@ -38,8 +38,8 @@ asm_main:
 	mov	ecx, array1
 start_loop:	
 
-	mov	eax, [ecx + ebx] 
-	imul	eax, 5
+	mov	ax, [ecx + ebx] 
+;	imul	eax, 5
 	call	print_int
 	call	print_nl
 	add	ebx, 2
@@ -54,9 +54,35 @@ start_loop:
 ;	call	print_nl		; test
 	push	eax
 	push	array1
-	call	scale_int
 
+	call	scale_int
+	mov	ecx, array1
 	add	esp, 12
+	
+	mov	ebx, 0			; clear ebx
+
+print_loop:
+	mov	ax, [ecx + ebx]	
+	imul	ax, 5
+	mov	[array1 + ebx] , ax
+
+	call	print_int
+	call	print_nl
+	add	ebx, 2
+	cmp	ebx, 10	
+	jl	print_loop
+
+	mov	ebx, 0			; clear ebx
+test_loop:
+	mov	ax, [array1 + ebx]
+	call	print_int
+	call	print_nl
+	add	ebx, 2
+	cmp	ebx, 10
+	jl	test_loop
+	
+
+
 
 ; *********** End Assignment Code **********************
 
@@ -72,23 +98,30 @@ scale_int:
 
 	mov	ebx, 0
 	mov	eax, 0
+
         mov     eax, [esp+4]		; 5
+	call	print_int		; test
+	call	print_nl		; test
 	mov	[scale], eax
 
-        mov     ax, [esp+8]		; 10
+        mov     eax, [esp+8]		; 10
+	call	print_int		; test
+	call	print_nl		; test
 	mov	[size], eax	
 	
 	mov	eax, [esp+12]		; array1
-	mov	[ary_tmp], eax	
+	mov	ecx, eax	
 
 loop_start:
 	
-	mov	eax, [ary_tmp + ebx]	
-	imul	eax, [scale]
-	mov	[ary_tmp], eax
+	mov	ax, 5			; 5 = [ecx + ebx]	
+	imul	ax, 5			; 5 = [scale]
+	call	print_int		; test
+	call	print_nl		; test
+;	mov	[ecx + ebx] , ax
 	
 	add	ebx, 2
-	cmp	ebx, [size]
+	cmp	ebx, 10			; 10 = [size]
         jl      loop_start
 
 
