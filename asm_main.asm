@@ -14,6 +14,8 @@ segment .data
 
 
 array1		dw	1,2,3,4,5	; array1 = [1,2,3,4,5]
+before		db	"before:",10,0
+after		db	"after:",10,0
 
 ; uninitialized data is put in the .bss segment
 ;
@@ -33,13 +35,15 @@ asm_main:
         pusha
 ; *********** Start  Assignment Code *******************
 
+	mov	eax, before
+	call	print_string
+;	call	print_nl
 	mov	eax, 0
 	mov	ebx, 0
 	mov	ecx, array1
 start_loop:	
 
 	mov	ax, [ecx + ebx] 
-;	imul	eax, 5
 	call	print_int
 	call	print_nl
 	add	ebx, 2
@@ -55,31 +59,31 @@ start_loop:
 	push	eax
 	push	array1
 
-	call	scale_int
-	mov	ecx, array1
+	mov	eax, after
+	call	print_string
+;	call	scale_int
 	add	esp, 12
-	
-	mov	ebx, 0			; clear ebx
 
-print_loop:
+
+	mov	eax, 0
+	mov	ecx, array1
+	mov	ebx, 0			; clear ebx
+scale_loop:
 	mov	ax, [ecx + ebx]	
 	imul	ax, 5
 	mov	[array1 + ebx] , ax
-
-	call	print_int
-	call	print_nl
 	add	ebx, 2
 	cmp	ebx, 10	
-	jl	print_loop
+	jl	scale_loop
 
 	mov	ebx, 0			; clear ebx
-test_loop:
+print_loop:
 	mov	ax, [array1 + ebx]
 	call	print_int
 	call	print_nl
 	add	ebx, 2
 	cmp	ebx, 10
-	jl	test_loop
+	jl	print_loop
 	
 
 
@@ -118,7 +122,7 @@ loop_start:
 	imul	ax, 5			; 5 = [scale]
 	call	print_int		; test
 	call	print_nl		; test
-;	mov	[ecx + ebx] , ax
+	mov	[ecx + ebx], ax
 	
 	add	ebx, 2
 	cmp	ebx, 10			; 10 = [size]
